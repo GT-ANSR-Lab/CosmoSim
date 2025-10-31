@@ -1,0 +1,41 @@
+# Constellation identifier and descriptive name
+name: sample_starlink
+nice_name: Sample Starlink-like Constellation
+
+# Global orbital parameters
+eccentricity: 0.0000001        # near circular
+arg_of_perigee_deg: 0.0
+phase_diff: true               # alternate phase shift between adjacent planes
+
+# Default inter-satellite link configuration (per-shell overrides permitted)
+isl:
+  type: plus_grid              # options: plus_grid, none
+  shift: 0                     # integer shift applied between adjacent planes
+
+# Shell definitions (multi-shell constellation supported)
+shells:
+  - num_orbits: 72
+    sats_per_orbit: 22
+    inclination_deg: 53.0
+    altitude_m: 550000
+  - num_orbits: 72
+    sats_per_orbit: 22
+    inclination_deg: 53.2
+    altitude_m: 540000
+    isl:
+      type: plus_grid
+      shift: 1
+  - num_orbits: 36
+    sats_per_orbit: 20
+    inclination_deg: 70.0
+    altitude_m: 570000
+  - num_orbits: 6
+    sats_per_orbit: 58
+    inclination_deg: 97.6
+    altitude_m: 560000
+    isl:
+      type: none
+  - num_orbits: 28
+    sats_per_orbit: 76
+    inclination_deg: 43.0
+    altitude_m: 530000

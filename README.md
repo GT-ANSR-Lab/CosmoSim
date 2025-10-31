@@ -1,3 +1,10 @@
 # CosmoSim
 
-This is the repository for the simulator used in the paper `Assessing LEO Satellite Networks for National Emergency Failover` to appear at IMC 2025. The repository is currently in progress. Please revisit by the end of October for the simualtor code.
+CosmoSim is the an open-source simulator to model satellite network capacity released as part of the
+_Assessing LEO Satellite Networks for National Emergency Failover_ paper at IMC 2025.  The code
+bundled here is curated for public release: configuration generators, graph
+builders, traffic-engineering runners, spectrum-management tooling, and plotting
+scripts are organised around a shared data directory so you can reproduce the
+pipeline end-to-end without hauling large intermediate artefacts.
+
+

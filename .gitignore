@@ -1,0 +1,11 @@
+# Large population rasters
+terminal_deployment/terminals/*
+
+# Kontur downloads placeholder
+inputs/shp_files/*
+
+# Legacy aggregated cells
+terminal_deployment/user_terminal_shp_files/starlink_countries/starlink_countries.gpkg
+
+
+__pycache__/
