@@ -23,15 +23,6 @@ if str(PROJECT_ROOT) not in sys.path:
 from utils.h3_compat import cell_to_boundary  # noqa: E402
 
 
-# Shape Sources:
-# Britain: https://statistics.ukdataservice.ac.uk/dataset/2011-census-geography-boundaries-great-britain/resource/284514b9-3eef-4521-9e0a-f6489e02668c
-# haiti: https://data.humdata.org/dataset/haiti-administrative-boundaries
-# ghana: https://data.humdata.org/dataset/ghana-administrative-boundaries
-# southafrica: https://data.humdata.org/dataset/south-africa-administrative-boundaries
-# tonga: https://data.humdata.org/dataset/tonga-administrative-boundaries
-# lithuania: https://data.humdata.org/dataset/lithuania-administrative-boundaries
-
-# Population Data Sources: https://data.humdata.org/dataset/kontur-population-dataset
 
 
 def load_country_population(country_name: str, detail_level: str) -> pd.DataFrame:
