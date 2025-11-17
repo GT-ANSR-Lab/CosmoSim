@@ -1,0 +1,37 @@
+name: starlink_5shells
+nice_name: Starlink 5-Shells
+eccentricity: 0.0000001
+arg_of_perigee_deg: 0.0
+phase_diff: true
+
+isl:
+  type: three_isls
+  shift: 0
+
+shells:
+  - num_orbits: 72
+    sats_per_orbit: 22
+    inclination_deg: 53.0
+    altitude_m: 550000
+    isl:
+      type: none
+
+  - num_orbits: 72
+    sats_per_orbit: 22
+    inclination_deg: 53.2
+    altitude_m: 540000
+
+  - num_orbits: 36
+    sats_per_orbit: 20
+    inclination_deg: 70.0
+    altitude_m: 570000
+
+  - num_orbits: 6
+    sats_per_orbit: 58
+    inclination_deg: 97.6
+    altitude_m: 560000
+
+  - num_orbits: 28
+    sats_per_orbit: 76
+    inclination_deg: 43.0
+    altitude_m: 530000

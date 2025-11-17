@@ -1,0 +1,77 @@
+name: starlink_all
+nice_name: Starlink All Shells
+eccentricity: 0.0000001
+arg_of_perigee_deg: 0.0
+phase_diff: true
+
+isl:
+  type: three_isls
+  shift: 0
+
+shells:
+  - num_orbits: 72
+    sats_per_orbit: 22
+    inclination_deg: 53.0
+    altitude_m: 550000
+    isl:
+      type: none
+
+  - num_orbits: 72
+    sats_per_orbit: 22
+    inclination_deg: 53.2
+    altitude_m: 540000
+
+  - num_orbits: 36
+    sats_per_orbit: 20
+    inclination_deg: 70.0
+    altitude_m: 570000
+
+  - num_orbits: 6
+    sats_per_orbit: 58
+    inclination_deg: 97.6
+    altitude_m: 560000
+
+  - num_orbits: 28
+    sats_per_orbit: 120
+    inclination_deg: 43.0
+    altitude_m: 530000
+
+  - num_orbits: 28
+    sats_per_orbit: 120
+    inclination_deg: 53.0
+    altitude_m: 525000
+
+  - num_orbits: 28
+    sats_per_orbit: 120
+    inclination_deg: 33.0
+    altitude_m: 535000
+
+  - num_orbits: 48
+    sats_per_orbit: 110
+    inclination_deg: 53.0
+    altitude_m: 340000
+
+  - num_orbits: 48
+    sats_per_orbit: 110
+    inclination_deg: 46.0
+    altitude_m: 345000
+
+  - num_orbits: 48
+    sats_per_orbit: 110
+    inclination_deg: 38.0
+    altitude_m: 350000
+
+  - num_orbits: 30
+    sats_per_orbit: 120
+    inclination_deg: 96.9
+    altitude_m: 360000
+
+  - num_orbits: 12
+    sats_per_orbit: 12
+    inclination_deg: 148.0
+    altitude_m: 604000
+
+  - num_orbits: 18
+    sats_per_orbit: 18
+    inclination_deg: 115.7
+    altitude_m: 614000

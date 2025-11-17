@@ -4,7 +4,6 @@ import random
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Tuple
 import pandas as pd
-import h3
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon as mPolygon
 from matplotlib.collections import PatchCollection
@@ -18,6 +17,10 @@ INPUT_ROOT = PROJECT_ROOT / "inputs"
 CELLS_ROOT = INPUT_ROOT / "cells"
 TERMINAL_OUTPUT_ROOT = SCRIPT_DIR / "terminals"
 TERMINAL_OUTPUT_ROOT.mkdir(parents=True, exist_ok=True)
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.append(str(PROJECT_ROOT))
+
+from utils.h3_compat import cell_to_boundary  # noqa: E402
 
 
 # Shape Sources:
@@ -180,7 +183,7 @@ def plot_cell_heatmap(country_name, cell_terminals, ut_distribution, cap):
     values = []
 
     for cell, terminals in cell_terminals.items():
-        cell_boundary = h3.h3_to_geo_boundary(cell)
+        cell_boundary = cell_to_boundary(cell)
 
         cell_boundary = [(lon, lat) for lat, lon in cell_boundary]
         cell_polygon = mPolygon(cell_boundary)

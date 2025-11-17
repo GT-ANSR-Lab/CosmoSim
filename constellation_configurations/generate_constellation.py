@@ -1,7 +1,7 @@
 import argparse
 import sys
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 import yaml
 import math
@@ -14,6 +14,13 @@ if str(REPO_ROOT) not in sys.path:
 from utils.tles.generate_tles_from_scratch import generate_tles_from_scratch_manual_shells
 from utils.isls.generate_empty_isls import generate_empty_isls
 from utils.isls.generate_three_isls import generate_three_isls
+from utils.description.generate_description import generate_description_shells
+
+EARTH_RADIUS_M = 6_378_135.0
+GRAVITATIONAL_PARAMETER_M3_S2 = 3.986004418e14
+SECONDS_PER_DAY = 86_400.0
+MIN_ELEVATION_RAD = math.radians(25.0)
+ISL_MIN_ALTITUDE_M = 80_000.0
 
 
 def parse_args() -> argparse.Namespace:
@@ -63,24 +70,16 @@ def extract_shell_parameter(shells: List[Dict[str, Any]], key: str) -> List[Any]
 def write_tles(config: Dict[str, Any], output_dir: Path) -> None:
     shells = config["shells"]
     num_shells = len(shells)
-    num_orbits = extract_shell_parameter(shells, "num_orbits")
-    sats_per_orbit = extract_shell_parameter(shells, "sats_per_orbit")
-    inclinations = extract_shell_parameter(shells, "inclination_deg")
-    altitudes = extract_shell_parameter(shells, "altitude_m")
+    num_orbits = [int(value) for value in extract_shell_parameter(shells, "num_orbits")]
+    sats_per_orbit = [int(value) for value in extract_shell_parameter(shells, "sats_per_orbit")]
+    inclinations = [float(value) for value in extract_shell_parameter(shells, "inclination_deg")]
+    altitudes = [float(value) for value in extract_shell_parameter(shells, "altitude_m")]
 
     eccentricity = config.get("eccentricity", 1e-7)
     arg_of_perigee = config.get("arg_of_perigee_deg", 0.0)
     phase_diff = bool(config.get("phase_diff", True))
 
-    # Convert altitude to mean motion (revolutions per day)
-    mean_motions = []
-    mu = 3.986004418e14  # Earth's gravitational parameter (m^3/s^2)
-    earth_radius = 6_378_135.0  # meters
-    for altitude_m in altitudes:
-        semi_major = earth_radius + float(altitude_m)
-        mean_motion_rad_s = math.sqrt(mu / semi_major ** 3)
-        mean_motion_rev_day = mean_motion_rad_s * 86400.0 / (2.0 * math.pi)
-        mean_motions.append(mean_motion_rev_day)
+    mean_motions = compute_mean_motions(altitudes)
 
     tles_path = output_dir / "tles.txt"
     generate_tles_from_scratch_manual_shells(
@@ -153,6 +152,53 @@ def write_isls(config: Dict[str, Any], output_dir: Path) -> None:
             fh.write(f"{a} {b}\n")
 
 
+def compute_mean_motions(altitudes_m: List[float]) -> List[float]:
+    mean_motions = []
+    for altitude_m in altitudes_m:
+        semi_major = EARTH_RADIUS_M + float(altitude_m)
+        mean_motion_rad_s = math.sqrt(GRAVITATIONAL_PARAMETER_M3_S2 / semi_major ** 3)
+        mean_motions.append(mean_motion_rad_s * SECONDS_PER_DAY / (2.0 * math.pi))
+    return mean_motions
+
+
+def compute_link_lengths(altitudes_m: List[float]) -> Tuple[List[float], List[float]]:
+    max_gsl_lengths = []
+    max_isl_lengths = []
+    sin_elev = math.sin(MIN_ELEVATION_RAD)
+    for altitude_m in altitudes_m:
+        altitude = float(altitude_m)
+        cone_radius = (
+            math.sqrt((EARTH_RADIUS_M * sin_elev) ** 2 + altitude ** 2 + 2 * EARTH_RADIUS_M * altitude)
+            - EARTH_RADIUS_M * sin_elev
+        )
+        max_gsl_lengths.append(math.sqrt(cone_radius ** 2 + altitude ** 2))
+        max_isl_lengths.append(
+            2.0
+            * math.sqrt(
+                (EARTH_RADIUS_M + altitude) ** 2
+                - (EARTH_RADIUS_M + ISL_MIN_ALTITUDE_M) ** 2
+            )
+        )
+    return max_gsl_lengths, max_isl_lengths
+
+
+def write_description(config: Dict[str, Any], output_dir: Path) -> None:
+    shells = config["shells"]
+    num_orbits = [int(value) for value in extract_shell_parameter(shells, "num_orbits")]
+    sats_per_orbit = [int(value) for value in extract_shell_parameter(shells, "sats_per_orbit")]
+    altitudes = [float(value) for value in extract_shell_parameter(shells, "altitude_m")]
+    max_gsl_lengths, max_isl_lengths = compute_link_lengths(altitudes)
+
+    description_path = output_dir / "description.txt"
+    generate_description_shells(
+        description_path,
+        num_orbits,
+        sats_per_orbit,
+        max_gsl_lengths,
+        max_isl_lengths,
+    )
+
+
 def main() -> None:
     args = parse_args()
     config = load_config(args.config)
@@ -163,6 +209,7 @@ def main() -> None:
 
     write_tles(config, output_dir)
     write_isls(config, output_dir)
+    write_description(config, output_dir)
 
     print(f"Wrote constellation artefacts to {output_dir}")
 

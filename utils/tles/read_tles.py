@@ -27,8 +27,15 @@ def read_tles(filename_tles):
             tles_line_3 = f.readline()
 
             # Retrieve name and identifier
-            name = tles_line_1
-            sid = int(name.split()[1])
+            name = tles_line_1.strip()
+            tokens = name.split()
+            sid = i
+            if tokens:
+                maybe_sid = tokens[-1]
+                try:
+                    sid = int(maybe_sid)
+                except ValueError:
+                    sid = i
             if sid != i:
                 raise ValueError("Satellite identifier is not increasing by one each line")
             i += 1

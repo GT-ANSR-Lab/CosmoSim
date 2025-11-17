@@ -1,7 +1,7 @@
 import math
-import h3
 import ephem
 from geopy.distance import great_circle
+from utils.h3_compat import cell_to_latlon
 
 
 def distance_m_between_satellites(sat1, sat2, epoch_str, date_str):
@@ -80,7 +80,7 @@ def distance_m_ground_station_to_cell(cell_id, satellite, epoch_str, date_str):
 
     :return: The distance between the cell and the satellite in meters
     """
-    lat, lon = h3.h3_to_geo(cell_id)
+    lat, lon = cell_to_latlon(cell_id)
     # Create an observer on the planet where the ground station is
     observer = ephem.Observer()
     observer.epoch = epoch_str

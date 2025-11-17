@@ -9,3 +9,15 @@ terminal_deployment/user_terminal_shp_files/starlink_countries/starlink_countrie
 
 
 __pycache__/
+
+# Generated data outputs and plots
+data/
+graph_generation/graphs/
+terminal_deployment/terminals/
+plotting_scripts/out/
+inputs/**/*.gpkg
+inputs/**/*.shp
+inputs/**/*.shx
+inputs/**/*.dbf
+inputs/**/*.prj
+inputs/**/*.cpg
