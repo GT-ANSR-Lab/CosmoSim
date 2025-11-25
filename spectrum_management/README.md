@@ -4,7 +4,7 @@ This package tracks the beam-management experiments that sit between terminal pl
 
 | Component | Purpose |
 | --- | --- |
-| `common.py`, `compatibility.py`, `constants.py` | Shared helpers for normalizing cells/satellites, enforcing per-beam constraints, and defining limits such as `MAX_CHANNELS_PER_CELL`. |
+| `common.py`, `interference.py`, `constants.py` | Shared helpers for normalizing cells/satellites, enforcing per-beam constraints, running interference checks, and defining limits such as `MAX_CHANNELS_PER_CELL`. |
 | `beam_mapping.py` | Policy dispatcher used by workflows. It prepares the inputs and routes the request to a specific algorithm. |
 | `greedy_uncoordinated.py` | Baseline algorithm that greedily assigns beams without cross-shell coordination. |
 | `greedy_coordinated.py` | Coordinated variant that balances assignments across shells and honors user-priority heuristics. |
@@ -44,3 +44,7 @@ Algorithms should only mutate their local state and return the mapping; all logg
 4. Update any scripts or configs that reference beam policies so they can opt into the new identifier.
 
 Following this pattern keeps algorithms discoverable and ensures they work with the existing workflows and plotting utilities.
+
+## Interference Checks
+
+`interference.py` exposes `check_interference(...)`, which each policy calls before committing a beam. The helper currently enforces co-channel isolation through `check_cochannel_interference(...)`, preventing the same satellite/beam index from being reused by a cell or any of its adjacent hex neighbors. Additional interference screens can be layered into `check_interference` without modifying the greedy policies, so keep this module in mind when introducing new spatial or spectral guardrails.

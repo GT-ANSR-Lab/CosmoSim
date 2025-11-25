@@ -11,7 +11,7 @@ from .common import (
     initialize_beam_state,
     priority_from_terminals,
 )
-from .compatibility import check_compatibility
+from .interference import check_interference
 from .constants import MAX_CHANNELS_PER_CELL
 
 
@@ -59,7 +59,7 @@ def assign_beams(
                     sat_cells_assigned.setdefault(sat, [])
                     for freq in range(global_vars.frequency_reuse_factor):
                         beam_id = f"{freq}_{sat}_{channel_idx}"
-                        if beam_id in beams_available and check_compatibility(cell_id, mapping, beam_id):
+                        if beam_id in beams_available and check_interference(cell_id, mapping, beam_id):
                             mapping[dummy_node] = beam_id
                             beams_available.remove(beam_id)
                             sat_cells_assigned[sat].append(cell_id)

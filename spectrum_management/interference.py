@@ -1,4 +1,4 @@
-"""Beam compatibility helpers."""
+"""Beam interference helpers."""
 
 from __future__ import annotations
 
@@ -9,8 +9,10 @@ from utils.h3_compat import k_ring
 from .constants import MAX_CHANNELS_PER_CELL
 
 
-def check_compatibility(cell: str, mappings: Mapping[str, str], proposed_beam: str) -> bool:
-    """Return True when the proposed beam assignment does not conflict with neighbors."""
+def check_cochannel_interference(
+    cell: str, mappings: Mapping[str, str], proposed_beam: str
+) -> bool:
+    """Return True when co-channel conflicts are absent in the cell and its neighbors."""
     proposed_sat = int(proposed_beam.split("_")[1])
     proposed_beam_idx = int(proposed_beam.split("_")[2])
 
@@ -29,3 +31,8 @@ def check_compatibility(cell: str, mappings: Mapping[str, str], proposed_beam: s
                 return False
 
     return True
+
+
+def check_interference(cell: str, mappings: Mapping[str, str], proposed_beam: str) -> bool:
+    """Composite interference check. Currently only ensures co-channel isolation."""
+    return check_cochannel_interference(cell, mappings, proposed_beam)

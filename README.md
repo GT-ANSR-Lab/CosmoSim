@@ -108,3 +108,10 @@ directory, constellation, ground stations, terminal file, country, flow time,
 beam policy, KU-band capacity), so you can invoke them directly if you only need
 a single scenario. Let each stage finish before starting the next to ensure all
 dependencies are in place.
+
+## Plotting
+
+The figures from the paper, along with any custom visualizations, are generated
+via the scripts under `plotting_scripts/`. Each entry reads the data products
+from the workflow stages above and drops rendered assets into
+`plotting_scripts/out/`.
