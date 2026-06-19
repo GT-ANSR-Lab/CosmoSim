@@ -7,6 +7,8 @@ import exputil
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = SCRIPT_DIR.parent
+GEN_SCRIPT = SCRIPT_DIR / "generate_cell_allocations.py"
 COMMAND_LOG_DIR = SCRIPT_DIR / "command_logs"
 COMMAND_LOG_DIR.mkdir(exist_ok=True)
 
@@ -68,8 +70,12 @@ detail_override = None  # e.g., set to "1" to run with --detail 1
 
 def build_command(args, log_name):
     detail_flag = f" --detail {detail_override}" if detail_override is not None else ""
+    # cd into the project root and use absolute script/log paths so the runner can
+    # be launched from anywhere (e.g. the repository root), matching the batch
+    # runners under scripts/.
     return (
-        f"python generate_cell_allocations.py"
+        f"cd {PROJECT_ROOT}; "
+        f"python {GEN_SCRIPT}"
         f"{detail_flag} {args} > {COMMAND_LOG_DIR / log_name} 2>&1"
     )
 

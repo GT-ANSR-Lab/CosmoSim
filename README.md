@@ -46,8 +46,9 @@ python -m pip install -r requirements.txt
 ```
 
 Run the following stages from the repository root using the dedicated helper
-scripts. Each script spawns the required workflow jobs and logs output under
-`data/command_logs/`.
+scripts. Each script spawns the required workflow jobs. Stages 2–5 log under
+`data/command_logs/`; the terminal stage (1) logs under
+`terminal_deployment/command_logs/`.
 
 1. **Generate terminal distributions**
 
@@ -57,11 +58,14 @@ scripts. Each script spawns the required workflow jobs and logs output under
 
    Adjust the country/population/distribution lists near the top of the script
    (or edit `terminal_deployment/generate_cell_allocations.py` for bespoke
-   runs). This stage writes `cells.txt` plus extended scenario assets inside
-   `data/scenarios/<scenario_id>/` (where `scenario_id` is a slug such as
-   `starlink_5shells_ground_stations_starlink_cells_britain_0_10000_uniform`) and populates
-   `data/<scenario_id>_<beam_policy>/demands.txt` with the baseline demand
-   snapshots (one directory per beam policy).
+   runs). This stage writes one terminal-allocation file per
+   country/population/distribution combination into
+   `terminal_deployment/terminals/`, named like
+   `cells_<country>_0_<population>_<distribution>.txt` (e.g.
+   `cells_britain_0_10000_uniform.txt`; GCB runs append the cap and Ku-band
+   capacity). These files are later resolved by the flow/capacity runners — the
+   `data/<scenario_id>_<beam_policy>/` directories and their `demands.txt`
+   snapshots are produced in stage 3, not here.
 
 2. **Generate graphs**
 
@@ -70,7 +74,8 @@ scripts. Each script spawns the required workflow jobs and logs output under
    ```
 
    Graph snapshots for each constellation/country/time combination are produced
-   under `graph_generation/graphs/<constellation>/<country>/1000ms/`.
+   under `graph_generation/graphs/<constellation>/<country>/`, one
+   `graph_<timestamp_ns>.txt` file per snapshot.
 
 3. **Generate flows (demand snapshots)**
 
@@ -99,9 +104,13 @@ scripts. Each script spawns the required workflow jobs and logs output under
    ```
 
    This step calls `workflows/generate_capacities_competing_traffic.py` to
-   evaluate emergency/incumbent demand priorities. Outputs (max-flow summaries,
-   fulfillment logs, first/second-pass flow dictionaries) are stored under
-   `data/capacities_competing/<scenario>/t<t>/<beam>/<routing>/<priority>/inc_<demand>/`.
+   evaluate emergency/incumbent demand priorities. Outputs are written into
+   the same `data/<scenario_id>_<beam_policy>/` directory as the demands, tagged
+   by routing/priority/incumbent-demand/time:
+   `competing_flow_<routing>_<priority>_inc<demand>_t<t>.txt` (capacity series),
+   `competing_fulfillment_<routing>_<priority>_inc<demand>_t<t>.txt`, and the
+   `competing_first_pass_*.json` / `competing_second_pass_*.json` flow
+   dictionaries (the incumbent-demand value is slugged, e.g. `0.05` -> `0p05`).
 
 Each workflow shares the same positional arguments (output directory, graph
 directory, constellation, ground stations, terminal file, country, flow time,
@@ -113,5 +122,18 @@ dependencies are in place.
 
 The figures from the paper, along with any custom visualizations, are generated
 via the scripts under `plotting_scripts/`. Each entry reads the data products
-from the workflow stages above and drops rendered assets into
+from the workflow stages above and drops rendered assets (PDF + PNG) into
 `plotting_scripts/out/`.
+
+Run them as modules from the repository root so the shared
+`plotting_scripts.common` helpers resolve and the default relative output
+directory lands in the right place:
+
+```bash
+python -m plotting_scripts.beam_allocation britain
+python -m plotting_scripts.routing britain
+python -m plotting_scripts.td_bm britain
+python -m plotting_scripts.td_bm_utilizations britain 10000 uniform greedy-coordinated max_flow
+python -m plotting_scripts.mask_capacities britain
+python -m plotting_scripts.vary_incumbent_demand britain
+```
