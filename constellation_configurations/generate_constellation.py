@@ -167,11 +167,11 @@ def compute_link_lengths(altitudes_m: List[float]) -> Tuple[List[float], List[fl
     sin_elev = math.sin(MIN_ELEVATION_RAD)
     for altitude_m in altitudes_m:
         altitude = float(altitude_m)
-        cone_radius = (
+        slant_range = (
             math.sqrt((EARTH_RADIUS_M * sin_elev) ** 2 + altitude ** 2 + 2 * EARTH_RADIUS_M * altitude)
             - EARTH_RADIUS_M * sin_elev
         )
-        max_gsl_lengths.append(math.sqrt(cone_radius ** 2 + altitude ** 2))
+        max_gsl_lengths.append(slant_range)
         max_isl_lengths.append(
             2.0
             * math.sqrt(
