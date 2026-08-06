@@ -185,13 +185,13 @@ def resolve_cells_for_country(country: str) -> Path:
 
 def generate_satellite_shell_index(num_satellites, num_orbits, num_sats_per_orbit):
     satellites_shell_idx = {}
-    idx = 0
-    sats_so_far = 0
-    for i in range(num_satellites):
-        if i == (num_orbits[idx] * num_sats_per_orbit[idx]) + sats_so_far:
-            idx += 1
-
-        satellites_shell_idx[i] = idx
+    current_sat_id = 0
+    
+    for shell_idx, (orbits, sats_per_orbit) in enumerate(zip(num_orbits, num_sats_per_orbit)):
+        shell_size = orbits * sats_per_orbit
+        for sat_id in range(current_sat_id, min(current_sat_id + shell_size, num_satellites)):
+            satellites_shell_idx[sat_id] = shell_idx
+        current_sat_id += shell_size
 
     return satellites_shell_idx
 
