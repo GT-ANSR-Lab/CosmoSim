@@ -228,7 +228,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("flow_time_s", type=int, help="Simulation time (seconds) for the snapshot.")
     parser.add_argument(
         "beam_policy",
-        choices=["greedy-uncoordinated", "greedy-coordinated"],
+        choices=["greedy-uncoordinated", "greedy-coordinated", "greedy-coordinated-inr-aware", "greedy-uncoordinated-inr-aware"],
         help="Beam-mapping policy to use.",
     )
     parser.add_argument(
