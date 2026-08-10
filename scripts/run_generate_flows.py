@@ -43,7 +43,7 @@ POPULATIONS: Dict[str, Sequence[int]] = {
     "britain": [1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000, 500000],
     "haiti": [1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000, 500000],
 }
-BEAM_POLICIES = ["greedy-uncoordinated", "greedy-coordinated"]
+BEAM_POLICIES = ["greedy-uncoordinated", "greedy-coordinated", "greedy-coordinated-inr-aware", "greedy-uncoordinated-inr-aware"]
 GCB_CAPS = {
     "southafrica": [1000, 10000, 100000],
     "ghana": [1000, 10000, 100000],
