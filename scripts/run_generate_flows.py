@@ -28,7 +28,7 @@ GROUNDSTATIONS_ROOT = PROJECT_ROOT / "inputs" / "groundstations"
 
 MAX_PARALLEL = max(1, multiprocessing.cpu_count() - 1)
 DURATION_S = 15
-DEFAULT_FLOW_TIMES = list(range(0, DURATION_S, DURATION_S)) or [0]
+DEFAULT_FLOW_TIMES = list(range(DURATION_S))
 GROUNDSTATIONS = ["ground_stations_starlink"]
 CONSTELLATIONS = ["starlink_5shells", "starlink_double", "starlink_all"]
 KU_BAND_CAPACITIES = [0.956, 1.28, 2.5]
