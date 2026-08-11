@@ -16,10 +16,10 @@ from utils.isls.generate_empty_isls import generate_empty_isls
 from utils.isls.generate_three_isls import generate_three_isls
 from utils.description.generate_description import generate_description_shells
 
-EARTH_RADIUS_M = 6_378_135.0
+EARTH_RADIUS_M = 6_378_137.0
 GRAVITATIONAL_PARAMETER_M3_S2 = 3.986004418e14
 SECONDS_PER_DAY = 86_400.0
-MIN_ELEVATION_RAD = math.radians(25.0)
+MIN_ELEVATION_RAD = math.radians(25.05)
 ISL_MIN_ALTITUDE_M = 80_000.0
 
 
