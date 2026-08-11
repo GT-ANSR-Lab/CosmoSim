@@ -1,6 +1,6 @@
 user_terminal_gsl_capacity = 100 # 100Mbps demand per user terminal
 ut_default_demand = 100 # 100 Mbps - proxy for 100 households with 100Mbps demand
-frequency_reuse_factor = 4
+spatial_channel_reuse_factor = 4
 ka_beam_capacity = 2600 # 2682.1 Mbps
 ground_station_gsl_capacity = ka_beam_capacity * 8 * 8 # 8 antennas per ground station
 ground_station_sat_capacity = ka_beam_capacity * 8
@@ -13,6 +13,6 @@ isl_max_connections = 4
 oversubscription_ratio = 1 # The ratio between maximum possible user traffic and the capacity that the network can support
 ku_beam_capacity = 1280 # 674.3 Mbps
 ut_gsl_max_capacity = ku_beam_capacity 
-sat_ut_max_capacity = ku_beam_capacity * 8 * frequency_reuse_factor # 
+sat_ut_max_capacity = ku_beam_capacity * 8 * spatial_channel_reuse_factor # 
 sat_gs_max_capacity = ka_beam_capacity * 8 
 incumbent_demand_multiplier = 12000 # 10.24 Gbps
