@@ -126,7 +126,7 @@ def generate_flows(
     shell_ranges = shell_satellite_ranges(constellation_dir)
     users_per_channel = max(1, math.floor(ku_band_capacity_gbps * 10))
 
-    timestamp = flow_time_s * 1000 * 1000 * 10000
+    timestamp = flow_time_s * 1000 * 1000 * 1000
     graph_path = graph_dir / f"graph_{timestamp}.txt"
     if not graph_path.exists():
         raise FileNotFoundError(f"Graph snapshot not found: {graph_path}")
@@ -160,7 +160,7 @@ def generate_flows(
         f"[info] Loaded {cell_count} populated cells, {ground_station_count} ground stations, "
         f"{satellite_count} satellites for {constellation_name}/{country} (t={flow_time_s}s)."
     )
-
+    global_vars.current_simulation_time_s = flow_time_s
     mapping = beam_mapping(
         beam_policy,
         cells,
@@ -172,7 +172,12 @@ def generate_flows(
         users_per_channel,
         cell_population,
     )
-
+    
+    beam_assignments_path = output_dir / f"beam_assignments_{timestamp}.pkl"
+    with beam_assignments_path.open("wb") as fh:
+        pickle.dump(mapping, fh)
+    print(f"[info] Wrote beam assignments to {beam_assignments_path}")
+    
     total_channels = cell_count * MAX_CHANNELS_PER_CELL
     allocated_slots = len(mapping)
     unique_beams = len(set(mapping.values()))
