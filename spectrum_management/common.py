@@ -36,7 +36,7 @@ def initialize_beam_state(satellites: Sequence[int]) -> Tuple[Set[str], Dict[int
     for sat in satellites:
         sat_cells_assigned[sat] = []
         for beam_idx in range(MAX_CHANNELS_PER_CELL):
-            for freq in range(global_vars.frequency_reuse_factor):
+            for freq in range(global_vars.spatial_channel_reuse_factor):
                 all_beams.add(f"{freq}_{sat}_{beam_idx}")
     return all_beams, sat_cells_assigned
 
