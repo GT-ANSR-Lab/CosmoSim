@@ -8,6 +8,8 @@ This package tracks the beam-management experiments that sit between terminal pl
 | `beam_mapping.py` | Policy dispatcher used by workflows. It prepares the inputs and routes the request to a specific algorithm. |
 | `greedy_uncoordinated.py` | Baseline algorithm that greedily assigns beams without cross-shell coordination. |
 | `greedy_coordinated.py` | Coordinated variant that balances assignments across shells and honors user-priority heuristics. |
+| `greedy_uncoordinated_inr_aware.py` | INR-aware variant of the greedy-uncoordinated policy that verifies aggregate $I/N$ on all cells receiving a particular channel against a specified threshold before accepting a beam assignment. |
+| `greedy_coordinated_inr_aware.py` | INR-aware variant of the greedy-coordinated policy that verifies aggregate $I/N$ on all cells receiving a particular channel against a specified threshold before accepting a beam assignment. |
 
 ## Input and Output Contract
 
@@ -48,3 +50,5 @@ Following this pattern keeps algorithms discoverable and ensures they work with 
 ## Interference Checks
 
 `interference.py` exposes `check_interference(...)`, which each policy calls before committing a beam. The helper currently enforces co-channel isolation through `check_cochannel_interference(...)`, preventing the same satellite/beam index from being reused by a cell or any of its adjacent hex neighbors. Additional interference screens can be layered into `check_interference` without modifying the greedy policies, so keep this module in mind when introducing new spatial or spectral guardrails.
+
+`interference_rf.py` exposes RF geometry, TLE orbital propagation, and ITU antenna gain pattern standards (ITU-R S.1528 for satellite transmitters and ITU-R S.1428 for ground receivers). It powers the INR-aware policies by calculating path loss, off-axis directional gains, and received co-channel interference power in Watts to verify aggregate $I/N$ against designated thresholds.
