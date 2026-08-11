@@ -57,7 +57,7 @@ def assign_beams(
 
                 for sat in candidate:
                     sat_cells_assigned.setdefault(sat, [])
-                    for freq in range(global_vars.frequency_reuse_factor):
+                    for freq in range(global_vars.spatial_channel_reuse_factor):
                         beam_id = f"{freq}_{sat}_{channel_idx}"
                         if beam_id in beams_available and check_interference(cell_id, mapping, beam_id):
                             mapping[dummy_node] = beam_id
