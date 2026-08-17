@@ -1,6 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+"""
+This script calculates and visualizes the percentage loss in Shannon channel capacity as a function of the Interference-to-Noise Ratio (INR) across various baseline Signal-to-Noise Ratios (SNRs). It computes the theoretical Shannon capacity under clean conditions and compares it against capacity degraded by co-channel interference, generating a line plot to illustrate the throughput impact.
+"""
+
 inr_db = np.arange(-30, 31, 1)
 inr_linear = 10 ** (inr_db / 10.0)
 
