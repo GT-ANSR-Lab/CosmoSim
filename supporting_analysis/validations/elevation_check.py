@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+
+"""
+Checks all generated graphs acroos all time snapshots for 25 deg min elevation violations.
+"""
+
 import os
 import re
 import pickle
