@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+
+"""
+This script loads satellite beam assignments and TLE ephemeris data for a specific scenario snapshot, computes the signal-to-noise ratio (SNR) for active ground terminal links using SGP4 orbital propagation and Astropy frame transformations, and visualizes the resulting SNR distribution as a histogram.
+"""
+
 import sys
 import pickle
 import re
