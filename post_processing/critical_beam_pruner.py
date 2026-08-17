@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+
+"""
+This script implements an adaptive beam optimization and analysis tool in Streamlit that loads simulation mapping files and propagates satellite positions to evaluate radio frequency (RF) interference-to-noise ratio (INR) metrics. It features an iterative pruning mechanism that checks consecutive beam assignments against an INR threshold, dropping any violating links as it parses through. The interface provided a toggleable option to drop critical beams in the sidebar which works on top of any existing beam assignment policy and also prepares a list of dropped beams
+"""
+
 import os
 import pickle
 import re
