@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+
+"""
+This script provides an interactive Streamlit application for analyzing co-channel interference and neighbor relationships within simulation data sets. It loads time snapshot mapping files and propagates satellite ephemeris to calculate isolated link single interferer interference-to-noise ratio (INR) values across neighboring hexagonal ground cells. The user interface includes sidebar scenario selectors, an interactive map visualization displaying cell polygons and color coded neighbor conflict lines, simulation metrics, global statistical summaries, and expandable detailed conflict logs.
+"""
+
 import os
 import pickle
 import re
