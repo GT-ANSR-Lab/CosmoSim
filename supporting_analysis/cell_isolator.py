@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Dedicated Cell 21 INR Anomaly Inspector for CosmoSim PKL Datasets with Interactive 2D Satellite Plotting."""
+"""One Cell INR Inspector for CosmoSim PKL Datasets with Interactive 2D Satellite Plotting."""
 
 import pickle
 import re
@@ -19,7 +19,6 @@ from astropy.coordinates import TEME, ITRS
 from astropy.time import Time
 import astropy.units as u
 
-# --- Physical Constants matching your Streamlit Analyzer ---
 C = 299792458.0
 FREQ = 10.7e9
 T_SYS = 200.0
@@ -152,7 +151,7 @@ def get_satellite_positions(tle_path, time_offset_seconds):
 
 
 def plot_interfering_satellites_2d(c21_channels, active_transmitters, sat_positions, tgt_ecef, cell21_latlon):
-    """Generates an interactive 2D spatial scatter plot with hover text containing satellite numbers and active channel beam counts."""
+    """Generates a 2D spatial scatter plot with hover text containing satellite numbers and active channel beam counts."""
     fig, ax = plt.subplots(figsize=(10, 8))
     
     c21_lat, c21_lon = cell21_latlon
@@ -357,7 +356,7 @@ def run_cell21_audit(pkl_path: Path, time_seconds: int = 0):
         target_reuse = target_data["reuse"]
         target_sat_id = target_data["sat"]
 
-        print(f"\n  ================ Hardware Channel {slot} ================")
+        print(f"\n Hardware Channel {slot}")
         if target_sat_id not in sat_positions:
             print(f"  [CRITICAL BUG] Serving Sat ID {target_sat_id} missing from SGP4 positions!")
             continue
@@ -403,7 +402,7 @@ def run_cell21_audit(pkl_path: Path, time_seconds: int = 0):
         else:
             inr_db = -100.0
 
-        print(f"\n  ------------------------------------------------")
+        print(f"\n _______________________________________________________")
         print(f"  Aggregated Interference Watts : {total_i_watts:.2e} W")
         print(f"  Computed INR for Channel {slot}    : {inr_db:.2f} dB")
         
