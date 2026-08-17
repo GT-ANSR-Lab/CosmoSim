@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+
+"""
+This script plots spatial transmission gain values relative to boresight direction overlaid on a map.
+"""
+
 import os
 import webbrowser
 import tempfile
