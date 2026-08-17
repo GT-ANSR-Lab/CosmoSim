@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+
+"""
+This script loads simulation data from pickle files, propagates satellite positions from TLE files, and calculates radio frequency (RF) interference-to-noise ratio (INR) metrics for user cells across channels. It provides a Streamlit user interface featuring interactive sidebar parameter controls, a Folium map visualization of spatial cell boundaries and interference thresholds, scenario performance metrics, and detailed tabular summaries of beam configurations and per-cell spectrum allocations.
+"""
+
 import os
 import sys
 import pickle
