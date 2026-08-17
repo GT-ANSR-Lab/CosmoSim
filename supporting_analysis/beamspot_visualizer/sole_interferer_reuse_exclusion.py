@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+
+"""
+This script models a satellite's downlink footprint and evaluates interference-to-noise ratio (INR) across H3 geographical cells relative to a specified satellite position and orientation. Useful to evaluate cell buffer required before a reuse beam can be assigned to the same satellite on the same channel. 
+"""
+
 import tempfile
 import webbrowser
 import numpy as np
