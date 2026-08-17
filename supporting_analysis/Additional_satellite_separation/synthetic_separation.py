@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+
+"""
+This script models possible INR values for synthetic distance separation of pairs of satellites serving neighboring cells. It performs a parametric distance domain sweep of artificial satellite separations, calculates link budgets and antenna gain patterns, and visualizes sample distributions, percentile envelopes, and binned violin plots of the Interference-to-Noise Ratio (I/N).
+"""
+
 import numpy as np
 import h3
 import matplotlib.pyplot as plt
