@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+"""
+This script performs an interference-to-noise ratio (I/N) analysis across unique satellite pairs in a Starlink constellation snapshot for a specific pair of ground cells. It propagates orbital ephemeris using SGP4 and Astropy, evaluates antenna gain patterns and link budgets, and visualizes the results through scatter plots, histograms, percentile envelopes, and violin plots grouped by satellite separation distance bins comprising of all possible separation values according to the 5shells constellation.
+"""
+
 import re
 from pathlib import Path
 from datetime import datetime, timedelta
