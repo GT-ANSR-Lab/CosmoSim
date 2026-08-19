@@ -16,3 +16,4 @@ pandas
 h3
 PyYAML
 basemap
+streamlit
