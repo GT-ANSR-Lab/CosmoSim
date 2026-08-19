@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-This script performs a co-channel elevation analysis across H3 geographical cells relative to a central interfering satellite link. It computes link budgets and radiation pattern across a sweep of elevation angles, classifies cells based on an Interference-to-Noise Ratio (INR) threshold of -12 dB, and generates an interactive map displaying elevation angle ranges that candidate cells can use safely (sweeps from 90 deg [directly overhead] to 25 deg [min elevation] in the opposite side on the plane of the sole interferer).
+This script performs a co-channel elevation analysis across H3 geographical cells relative to a central interfering satellite link directed at a central cell in Atlanta. It computes link budgets and radiation pattern across a sweep of elevation angles, classifies cells based on an Interference-to-Noise Ratio (INR) threshold of -12 dB, and generates an interactive map displaying elevation angle ranges that candidate cells can use safely (sweeps from 90 deg [directly overhead] to 25 deg [min elevation] in the opposite side on the plane of the sole interferer).
 """
 
 import tempfile
