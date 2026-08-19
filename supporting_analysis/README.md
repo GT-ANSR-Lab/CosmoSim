@@ -1,6 +1,6 @@
 # Supporting Analysis
 
-This package contains standalone diagnostic and visualization scripts used to analyze beam-assignment snapshots, compute RF metrics (SNR/INR), and generate beam/antenna pattern visualizations. It provides lightweight, script-driven tools for rapid post-simulation inspection and local figure generation.
+This package contains diagnostic and visualization scripts used to analyze beam assignment snapshots, compute RF metrics (SNR/INR), and generate beam/antenna pattern visualizations. These scripts are designed to provide insight into specific beam assignment scenarios and understand the interference influence of making beam assignments.  
 
 | Component | Purpose |
 | --- | --- |
@@ -21,5 +21,5 @@ This package contains standalone diagnostic and visualization scripts used to an
 | `supporting_analysis/beamspot_visualizer/sole_interferer_reuse_exclusion.py` | Visual INR analysis for single interferer under satellite reuse case. |
 | `supporting_analysis/interference_patterns/Rx_pattern.py` | Receive antenna gain pattern vs off-axis angle plot. |
 | `supporting_analysis/interference_patterns/Tx_pattern.py` | Transmit antenna gain pattern vs off-axis angle plot. |
-| `supporting_analysis/validations/elevation_check.py` | Checks for 25 degree minimum elevation angle violations across all graph snapshots. |
+| `supporting_analysis/validations/elevation_check.py` | Checks for 25 degree minimum elevation angle violations across all graph snapshots and provides diagnostics on violating edges. |
 
