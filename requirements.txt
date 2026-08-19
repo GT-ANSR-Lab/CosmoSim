@@ -17,4 +17,7 @@ h3
 PyYAML
 basemap
 streamlit
+streamlit-folium
 mplcursors
+seaborn
+plotly
