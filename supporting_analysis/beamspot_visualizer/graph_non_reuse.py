@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-This script models the allowable elevation angle range of nearby cells based on a sole directly overhead interferer on a fixed central Atlanta cell. It plots safe elevation angle ranges of nearby cells by performing a sweep between min elevation angle extremes on the plane of the interfering beam.
+This script models the allowable elevation angle range of nearby cells based on a sole directly overhead interferer on a fixed central cell. It plots safe elevation angle ranges of nearby cells by performing a sweep between min elevation angle extremes on the plane of the interfering beam.
 """
 
 import tempfile
