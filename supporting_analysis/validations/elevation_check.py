@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Checks all generated graphs acroos all time snapshots for 25 deg min elevation violations.
+Checks all generated graphs across all time snapshots for 25 deg min elevation violations and gives a detailed diagnosis of elevation violating edges
 """
 
 import os
@@ -61,10 +61,27 @@ def get_tle_info(tle_path):
                         pass
     return epoch_datetime, sat_count
 
+def sanitize_to_pydatetime(dt_val):
+    if isinstance(dt_val, datetime):
+        return dt_val
+    if isinstance(dt_val, np.datetime64):
+        unix_epoch = np.datetime64('1970-01-01T00:00:00')
+        seconds = (dt_val - unix_epoch) / np.timedelta64(1, 's')
+        return datetime.utcfromtimestamp(float(seconds))
+    if hasattr(dt_val, 'to_pydatetime'):
+        return dt_val.to_pydatetime()
+    if isinstance(dt_val, str):
+        for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M:%S.%f", "%Y/%m/%d %H:%M:%S"):
+            try:
+                return datetime.strptime(dt_val, fmt)
+            except ValueError:
+                pass
+    raise ValueError(f"Unable to convert epoch object of type {type(dt_val)} to standard datetime.")
+
 def load_allowed_haiti_cells(cells_file_path):
     allowed_cells = set()
     if not os.path.exists(cells_file_path):
-        print(f"[!] Warning: Cell file not found at {cells_file_path}")
+        print(f"[!] Warning: Strict cell restriction file not found at {cells_file_path}")
         return allowed_cells
         
     with open(cells_file_path, 'r') as f:
@@ -87,10 +104,11 @@ def inspect_generated_graphs(tle_path, graphs_dir, cells_file_path, min_elevatio
     if read_tles is not None:
         try:
             tle_data = read_tles(tle_path)
-            epoch_base = tle_data.get("epoch") if isinstance(tle_data, dict) else getattr(tle_data, "epoch", None)
+            raw_epoch = tle_data.get("epoch") if isinstance(tle_data, dict) else getattr(tle_data, "epoch", None)
             num_satellites = len(tle_data.get("satellites", [])) if isinstance(tle_data, dict) else len(load_pyephem_satellites(tle_path))
-            if epoch_base is None:
+            if raw_epoch is None:
                 raise ValueError("Epoch not found in read_tles output.")
+            epoch_base = sanitize_to_pydatetime(raw_epoch)
             print("[+] Successfully synchronized epoch via utils.tles.read_tles")
         except Exception as e:
             print(f"[!] Target pipeline reader failed ({e}). Falling back to manual parser.")
@@ -101,9 +119,9 @@ def inspect_generated_graphs(tle_path, graphs_dir, cells_file_path, min_elevatio
     satellites = load_pyephem_satellites(tle_path)
     haiti_cells_filter = load_allowed_haiti_cells(cells_file_path)
     
-    print(f"[+] Loaded {len(haiti_cells_filter)} strict target cells from scenario file.")
+    print(f"[+] Loaded {len(haiti_cells_filter)} strict target cells from constraint file.")
     print(f"[+] Found TLE Base Epoch: {epoch_base}")
-    print(f"[+] Total Satellites In Constellation: {num_satellites}")
+    print(f"[+] Total Constellation Satellites: {num_satellites}")
     print(f"[+] Target Minimum Elevation Threshold: {min_elevation_deg}°\n")
 
     if not os.path.exists(graphs_dir):
@@ -117,23 +135,28 @@ def inspect_generated_graphs(tle_path, graphs_dir, cells_file_path, min_elevatio
         
     graph_files.sort(key=lambda f: int(re.findall(r'\d+', f)[0]))
 
-    print(f"{'Snapshot File Source':<25} | {'Active Sats':<11} | {'Active Cells':<12} | {'GSLs Checked':<12} | {'Policy Violations (<25°)':<24} | {'Critical (Below Horizon <0°)':<28}")
-    print("-" * 123)
+    print(f"{'Snapshot File Source':<25} | {'Active Sats':<11} | {'Active Cells':<12} | {'GSLs Checked':<12} | {'Elevation Angle Violations (<25°)':<31} | {'Violation Values (Deg Deficit)':<35} | {'Critical (Below Horizon <0°)':<28}")
+    print("-" * 167)
     
     total_edges_checked = 0
-    total_policy_violations = 0
+    total_elevation_violations = 0
     total_critical_violations = 0
+    all_violation_degrees = []
     debug_violations_printed = 0
     
     cached_cell_coords = {}
     failing_edges_sample = []
 
+    observer = ephem.Observer()
+    observer.elevation = 0.0
+
     for graph_file in graph_files:
         timestamp_ns = int(re.findall(r'\d+', graph_file)[0])
         graph_path = os.path.join(graphs_dir, graph_file)
         
-        policy_violations_in_file = 0
+        elevation_violations_in_file = 0
         critical_violations_in_file = 0
+        file_violations = []
         edges_in_file = 0
         
         active_sats_in_file = set()
@@ -141,6 +164,7 @@ def inspect_generated_graphs(tle_path, graphs_dir, cells_file_path, min_elevatio
         
         try:
             current_time = epoch_base + timedelta(seconds=timestamp_ns / 1e9)
+            ephem_time_str = current_time.strftime("%Y/%m/%d %H:%M:%S.%f")
             
             with open(graph_path, 'rb') as f:
                 graph = pickle.load(f)
@@ -177,17 +201,13 @@ def inspect_generated_graphs(tle_path, graphs_dir, cells_file_path, min_elevatio
                     
                     active_sats_in_file.add(sat_id)
                     active_cells_in_file.add(ground_node)
-                            
                     edges_in_file += 1
+
                     lat, lon = cached_cell_coords[ground_node]
                     
-                    # Mirroring native generator geometry setup explicitly using string definitions
-                    observer = ephem.Observer()
-                    observer.epoch = str(epoch_base)
-                    observer.date = str(current_time)
+                    observer.date = ephem_time_str
                     observer.lat = str(lat)
                     observer.lon = str(lon)
-                    observer.elevation = 0.0
                     
                     sat = satellites[sat_id]
                     sat.compute(observer)
@@ -195,7 +215,9 @@ def inspect_generated_graphs(tle_path, graphs_dir, cells_file_path, min_elevatio
                     current_elevation = np.degrees(float(sat.alt))
                     
                     if current_elevation < min_elevation_deg:
-                        policy_violations_in_file += 1
+                        elevation_violations_in_file += 1
+                        deficit = min_elevation_deg - current_elevation
+                        file_violations.append(round(deficit, 6))
                         
                         if debug_violations_printed < max_debug_violations:
                             edge_data = graph[source][target]
@@ -217,17 +239,27 @@ def inspect_generated_graphs(tle_path, graphs_dir, cells_file_path, min_elevatio
             print(f"\n[!] Read exception inside file {graph_file}: {e}")
             continue
         
-        print(f"{graph_file:<25} | {len(active_sats_in_file):<11} | {len(active_cells_in_file):<12} | {edges_in_file:<12} | {policy_violations_in_file:<24} | {critical_violations_in_file:<28}")
+        violations_str = ", ".join(f"{v}°" for v in file_violations) if file_violations else "None"
+        
+        print(f"{graph_file:<25} | {len(active_sats_in_file):<11} | {len(active_cells_in_file):<12} | {edges_in_file:<12} | {elevation_violations_in_file:<31} | {violations_str:<35} | {critical_violations_in_file:<28}")
         
         total_edges_checked += edges_in_file
-        total_policy_violations += policy_violations_in_file
+        total_elevation_violations += elevation_violations_in_file
         total_critical_violations += critical_violations_in_file
+        all_violation_degrees.extend(file_violations)
 
-    print("-" * 123)
-    print(f"{'TOTAL MATRIX RUN SUMMARY':<25} | {'-':<11} | {'-':<12} | {total_edges_checked:<12} | {total_policy_violations:<24} | {total_critical_violations:<28}")
-    print("-" * 123)
+    total_violations_str = ", ".join(f"{v}°" for v in all_violation_degrees) if all_violation_degrees else "None"
+
+    print("-" * 167)
+    print(f"{'TOTAL MATRIX RUN SUMMARY':<25} | {'-':<11} | {'-':<12} | {total_edges_checked:<12} | {total_elevation_violations:<31} | {total_violations_str:<35} | {total_critical_violations:<28}")
+    print("-" * 167)
     
-    # --- DIAGNOSTIC VERIFICATION OUTPUT ---
+    if all_violation_degrees:
+        max_violation = max(all_violation_degrees)
+        print(f"\n[+] Highest Violation Angle Difference (Deficit): {max_violation}°")
+    else:
+        print("\n[+] Highest Violation Angle Difference (Deficit): None (No violations found)")
+    
     if failing_edges_sample:
         print("\n" + "="*45 + " EDGE VIOLATION ANALYSER " + "="*45)
         print(f"{'Snapshot File':<20} | {'H3 Cell ID':<15} | {'Sat ID':<8} | {'Elevation':<10} | {'Graph Weight':<15} | {'PyEphem Slant Range (m)':<22}")
